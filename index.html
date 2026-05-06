@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Collector | Game Library</title>
+    <style>
+        /* Base Console Theme */
+        body { 
+            background: #0f0f0f; /* Deep console black */
+            color: white; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            overflow-x: hidden; 
+        }
+
+        /* Top Navigation Bar */
+        header { 
+            padding: 20px 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #1a1a1a; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
+        }
+
+        h1 { 
+            margin: 0; 
+            font-size: 28px; 
+            background: linear-gradient(to right, #00c6ff, #0072ff); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+
+        /* Search Bar */
+        .search-bar { 
+            padding: 10px 20px; 
+            border-radius: 20px; 
+            border: 2px solid transparent; 
+            outline: none; 
+            background: #333; 
+            color: white; 
+            font-size: 16px; 
+            width: 250px; 
+            transition: all 0.3s; 
+        }
+        .search-bar:focus { 
+            background: #222; 
+            border: 2px solid #00c6ff;
+            box-shadow: 0 0 15px rgba(0, 198, 255, 0.4); 
+        }
+        
+        /* The Swiping Carousel */
+        .carousel-container { 
+            display: flex; 
+            overflow-x: auto; 
+            padding: 80px 40px; 
+            gap: 40px; 
+            /* This creates the magnetic "snap" effect */
+            scroll-snap-type: x mandatory; 
+            scroll-behavior: smooth; 
+        }
+        
+        /* Hide the ugly desktop scrollbar for a native app feel */
+        .carousel-container::-webkit-scrollbar { display: none; } 
+        
+        /* Individual Game Cards */
+        .game-card { 
+            flex: 0 0 320px; /* Fixed width, won't shrink */
+            height: 450px; 
+            border-radius: 15px; 
+            background: #222; 
+            position: relative; 
+            scroll-snap-align: center; /* Forces this card to center when swiping */
+            transition: transform 0.3s, box-shadow 0.3s, border 0.3s; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            border: 2px solid transparent;
+        }
+
+        /* The "Active/Hover" Console State */
+        .game-card:hover, .game-card:focus-within { 
+            transform: scale(1.08); /* Pop out */
+            box-shadow: 0 15px 35px rgba(0, 198, 255, 0.5); 
+            border: 2px solid #00c6ff; 
+            z-index: 10; 
+        }
+        
+        .game-art { 
+            width: 100%; 
+            height: 60%; 
+            background: #333; 
+            /* If you add real images later, use: background-image: url('...'); background-size: cover; */
+        }
+        
+        .game-info { 
+            padding: 20px; 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+        }
+        
+        .game-title { margin: 0; font-size: 24px; font-weight: bold; }
+        .game-genre { color: #aaa; font-size: 14px; margin-top: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Play Button */
+        .play-btn { 
+            background: linear-gradient(to right, #FEE140, #FA709A); 
+            border: none; 
+            border-radius: 25px; 
+            padding: 12px; 
+            color: black; 
+            font-weight: bold; 
+            font-size: 16px; 
+            text-decoration: none; 
+            text-align: center; 
+            display: block; 
+            transition: filter 0.2s;
+        }
+        .play-btn:hover { filter: brightness(1.2); }
+        
+        .no-results { text-align: center; width: 100%; font-size: 20px; color: #888; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Game Collector</h1>
+        <input type="text" id="searchInput" class="search-bar" placeholder="Search library...">
+    </header>
+
+    <div class="carousel-container" id="gameCarousel">
+        </div>
+
+    <script>
+        // 1. Your Game Database
+        // Add new games to this array as you build them!
+        const games = [
+            {
+                id: 1,
+                title: "Gem Clash",
+                genre: "Match-3 Puzzle",
+                url: "./Gem Clash/game.html", // Maps to your existing folder structure
+                artBackground: "linear-gradient(45deg, #FEE140, #FA709A)" 
+            },
+            {
+                id: 2,
+                title: "Tides of Rodentia",
+                genre: "Action RPG",
+                url: "#",
+                artBackground: "linear-gradient(45deg, #1cb5e0, #000046)"
+            },
+            {
+                id: 3,
+                title: "Terminal Descent",
+                genre: "Retro Arcade",
+                url: "#",
+                artBackground: "linear-gradient(45deg, #000000, #0f9b0f)"
+            },
+            {
+                id: 4,
+                title: "Lite LMS Pro",
+                genre: "Simulation",
+                url: "#",
+                artBackground: "linear-gradient(45deg, #11998e, #38ef7d)"
+            }
+        ];
+
+        const carousel = document.getElementById('gameCarousel');
+        const searchInput = document.getElementById('searchInput');
+
+        // 2. The Rendering Engine
+        function renderGames(filterText = "") {
+            carousel.innerHTML = ""; // Wipe the board clean
+            
+            // Filter the games based on what is typed in the search bar
+            const filteredGames = games.filter(game => 
+                game.title.toLowerCase().includes(filterText.toLowerCase()) || 
+                game.genre.toLowerCase().includes(filterText.toLowerCase())
+            );
+
+            // Handle the case where a search has no matches
+            if (filteredGames.length === 0) {
+                carousel.innerHTML = `<div class="no-results">No software found matching "${filterText}"</div>`;
+                return;
+            }
+
+            // Build the HTML for each matching game
+            filteredGames.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.innerHTML = `
+                    <div class="game-art" style="background: ${game.artBackground};"></div>
+                    <div class="game-info">
+                        <div>
+                            <h2 class="game-title">${game.title}</h2>
+                            <div class="game-genre">${game.genre}</div>
+                        </div>
+                        <a href="${game.url}" class="play-btn">PLAY</a>
+                    </div>
+                `;
+                carousel.appendChild(card);
+            });
+        }
+
+        // 3. The Event Listeners
+        // Re-render the library every time the user types a letter
+        searchInput.addEventListener('input', (e) => {
+            renderGames(e.target.value);
+        });
+
+        // Quality of Life tweak: Allow PC users to scroll horizontally using their mouse wheel
+        carousel.addEventListener('wheel', (evt) => {
+            evt.preventDefault();
+            carousel.scrollLeft += evt.deltaY;
+        });
+
+        // Run this once when the page loads to show everything
+        renderGames();
+    </script>
+</body>
+</html>
