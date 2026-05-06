@@ -138,13 +138,14 @@
     <script>
         // 1. Your Game Database
         // Add new games to this array as you build them!
+       // 1. Your Game Database
         const games = [
             {
                 id: 1,
                 title: "Gem Clash",
                 genre: "Match-3 Puzzle",
                 url: "./Gem Clash/game.html",
-                artImage: "./assets/gem-clash-cover.png" // Use a clean string for the image path
+                artImage: "./assets/gem-clash-cover.png" 
             },
             {
                 id: 2,
@@ -174,29 +175,24 @@
 
         // 2. The Rendering Engine
         function renderGames(filterText = "") {
-            carousel.innerHTML = ""; // Wipe the board clean
+            carousel.innerHTML = ""; 
             
-            // Filter the games based on what is typed in the search bar
             const filteredGames = games.filter(game => 
                 game.title.toLowerCase().includes(filterText.toLowerCase()) || 
                 game.genre.toLowerCase().includes(filterText.toLowerCase())
             );
 
-            // Handle the case where a search has no matches
             if (filteredGames.length === 0) {
                 carousel.innerHTML = `<div class="no-results">No software found matching "${filterText}"</div>`;
                 return;
             }
 
-            // Build the HTML for each matching game
             filteredGames.forEach(game => {
                 const card = document.createElement('div');
                 card.className = 'game-card';
                 
-                // Decide whether to use an image tag or a colored background div
                 let artHTML = "";
                 if (game.artImage) {
-                    // object-fit: cover ensures the image fills the space without squishing
                     artHTML = `<img class="game-art" src="${game.artImage}" alt="${game.title}" style="object-fit: cover;">`;
                 } else {
                     artHTML = `<div class="game-art" style="background: ${game.artBackground};"></div>`;
@@ -214,20 +210,18 @@
                 `;
                 carousel.appendChild(card);
             });
+        } // <--- This was the likely culprit that went missing!
 
         // 3. The Event Listeners
-        // Re-render the library every time the user types a letter
         searchInput.addEventListener('input', (e) => {
             renderGames(e.target.value);
         });
 
-        // Quality of Life tweak: Allow PC users to scroll horizontally using their mouse wheel
         carousel.addEventListener('wheel', (evt) => {
             evt.preventDefault();
             carousel.scrollLeft += evt.deltaY;
         });
 
-        // Run this once when the page loads to show everything
         renderGames();
     </script>
 </body>
