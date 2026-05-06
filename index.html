@@ -144,7 +144,7 @@
                 title: "Gem Clash",
                 genre: "Match-3 Puzzle",
                 url: "./Gem Clash/game.html", // Maps to your existing folder structure
-                artBackground: "artImage: ./assets/gem-clash-cover.png" 
+                artBackground: artImage: "./assets/gem-clash-cover.png" 
             },
             {
                 id: 2,
@@ -193,7 +193,7 @@
                 const card = document.createElement('div');
                 card.className = 'game-card';
                 card.innerHTML = `
-                    <div class="game-art" style="background: ${game.artBackground};"></div>
+                    <img class="game-art" style="background: ${game.artBackground};"></img>
                     <div class="game-info">
                         <div>
                             <h2 class="game-title">${game.title}</h2>
