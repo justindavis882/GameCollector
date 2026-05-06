@@ -1,0 +1,22 @@
+body {
+	background-color: #222;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+}
+
+#ui-panel {
+    margin-bottom: 20px;
+}
+
+canvas {
+    background-color: #333;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
