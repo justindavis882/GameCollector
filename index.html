@@ -143,8 +143,8 @@
                 id: 1,
                 title: "Gem Clash",
                 genre: "Match-3 Puzzle",
-                url: "./Gem Clash/game.html", // Maps to your existing folder structure
-                artBackground: "artImage: "./assets/gem-clash-cover.png""
+                url: "./Gem Clash/game.html",
+                artImage: "./assets/gem-clash-cover.png" // Use a clean string for the image path
             },
             {
                 id: 2,
@@ -192,8 +192,18 @@
             filteredGames.forEach(game => {
                 const card = document.createElement('div');
                 card.className = 'game-card';
+                
+                // Decide whether to use an image tag or a colored background div
+                let artHTML = "";
+                if (game.artImage) {
+                    // object-fit: cover ensures the image fills the space without squishing
+                    artHTML = `<img class="game-art" src="${game.artImage}" alt="${game.title}" style="object-fit: cover;">`;
+                } else {
+                    artHTML = `<div class="game-art" style="background: ${game.artBackground};"></div>`;
+                }
+
                 card.innerHTML = `
-                    <img class="game-art" style="background: ${game.artBackground};"></img>
+                    ${artHTML}
                     <div class="game-info">
                         <div>
                             <h2 class="game-title">${game.title}</h2>
@@ -204,7 +214,6 @@
                 `;
                 carousel.appendChild(card);
             });
-        }
 
         // 3. The Event Listeners
         // Re-render the library every time the user types a letter
